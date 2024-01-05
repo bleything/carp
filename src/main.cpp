@@ -3,7 +3,6 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_SH110X.h>
 #include <Adafruit_seesaw.h>
 #include <MIDI.h>
 
@@ -32,7 +31,6 @@ uint32_t button_mask = (1 << BUTTON_JOY_A) | (1 << BUTTON_JOY_B) |
 #define JOY_X 2
 #define JOY_Y 3
 
-Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
 Adafruit_seesaw ss;
 
 struct MIDISettings : public midi::DefaultSettings {
@@ -69,20 +67,6 @@ void setup() {
 
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.setHandleClock(midi_clock_pulse);
-}
-
-void clear_screen() {
-  display.clearDisplay();
-  display.setCursor(0, 0);
-}
-
-void reset_screen() {
-  display.setRotation(1);
-  display.setTextSize(1);
-  display.setTextColor(SH110X_WHITE);
-
-  clear_screen();
-  display.display();
 }
 
 void loop() {
