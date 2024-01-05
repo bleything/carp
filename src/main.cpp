@@ -9,8 +9,11 @@
 
 #include "display.h"
 
-void scene_ui_test();
-void scene_midi_test();
+void scene_ui_test(void);
+void scene_midi_test(void);
+void scene_clock_test(void);
+
+void midi_clock_pulse(void);
 
 #define BUTTON_DISPLAY_A 9
 #define BUTTON_DISPLAY_B 8
@@ -34,8 +37,7 @@ uint32_t button_mask = (1 << BUTTON_JOY_A) | (1 << BUTTON_JOY_B) |
 Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
 Adafruit_seesaw ss;
 
-struct MIDISettings : public midi::DefaultSettings
-{
+struct MIDISettings : public midi::DefaultSettings {
   static const long BaudRate = 31250;
 };
 
@@ -68,6 +70,7 @@ void setup() {
   }
 
   MIDI.begin(MIDI_CHANNEL_OMNI);
+  MIDI.setHandleClock(midi_clock_pulse);
 }
 
 void clear_screen() {
@@ -85,8 +88,23 @@ void reset_screen() {
 }
 
 void loop() {
+  MIDI.read();
   // scene_ui_test();
-  scene_midi_test();
+  // scene_midi_test();
+  scene_clock_test();
+}
+
+uint32_t midi_pulses = 0;
+void midi_clock_pulse() {
+  if( midi_pulses++ % 24 == 0 ) {
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+  }
+}
+
+void scene_clock_test() {
+  clear_screen();
+  display.printf("%08d", midi_pulses);
+  display.display();
 }
 
 void scene_midi_test() {
