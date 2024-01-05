@@ -19,8 +19,6 @@ void midi_clock_pulse(void);
 #define BUTTON_DISPLAY_B 8
 #define BUTTON_DISPLAY_C 7
 
-#define LED_PIN 13
-
 // copypasta from the seesaw library's examples
 #define BUTTON_JOY_A    6
 #define BUTTON_JOY_B    7
@@ -55,14 +53,14 @@ void setup() {
   pinMode(BUTTON_DISPLAY_C, INPUT_PULLUP);
 
   // configure the built-in LED
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
 
   // configure joywing
   if(!ss.begin(0x49)) {
     display.print("FATAL: error initializing seesaw");
     display.display();
-    digitalWrite(LED_PIN, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
     while(1) delay(10);
   } else {
     ss.pinModeBulk(button_mask, INPUT_PULLUP);
