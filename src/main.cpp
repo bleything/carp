@@ -5,10 +5,12 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
 #include <Adafruit_seesaw.h>
+#include <MIDI.h>
 
 #include "display.h"
 
 void scene_ui_test();
+void scene_midi_test();
 
 #define BUTTON_DISPLAY_A 9
 #define BUTTON_DISPLAY_B 8
@@ -31,6 +33,13 @@ uint32_t button_mask = (1 << BUTTON_JOY_A) | (1 << BUTTON_JOY_B) |
 
 Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
 Adafruit_seesaw ss;
+
+struct MIDISettings : public midi::DefaultSettings
+{
+  static const long BaudRate = 31250;
+};
+
+MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial1, MIDI, MIDISettings);
 
 void setup() {
   // configure the display
@@ -57,6 +66,8 @@ void setup() {
     ss.pinModeBulk(button_mask, INPUT_PULLUP);
     ss.setGPIOInterrupts(button_mask, 1);
   }
+
+  MIDI.begin(MIDI_CHANNEL_OMNI);
 }
 
 void clear_screen() {
@@ -74,7 +85,18 @@ void reset_screen() {
 }
 
 void loop() {
-  scene_ui_test();
+  // scene_ui_test();
+  scene_midi_test();
+}
+
+void scene_midi_test() {
+   if(digitalRead(BUTTON_DISPLAY_A) == LOW) {
+    digitalWrite(LED_BUILTIN, HIGH);
+    MIDI.sendNoteOn(42, 127, 1);
+  } else {
+    digitalWrite(LED_BUILTIN, LOW);
+    MIDI.sendNoteOff(42, 0, 1);
+  }
 }
 
 void scene_ui_test() {
