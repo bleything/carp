@@ -8,6 +8,8 @@
 
 #include "display.h"
 
+void scene_ui_test();
+
 #define BUTTON_DISPLAY_A 9
 #define BUTTON_DISPLAY_B 8
 #define BUTTON_DISPLAY_C 7
@@ -72,6 +74,79 @@ void reset_screen() {
 }
 
 void loop() {
+  scene_ui_test();
+}
+
+void scene_ui_test() {
   clear_screen();
+  display.print(">");
+
+  if(digitalRead(BUTTON_DISPLAY_A) == LOW) {
+    display.print("A");
+  } else {
+    display.print(" ");
+  }
+
+  if(digitalRead(BUTTON_DISPLAY_B) == LOW) {
+    display.print("B");
+  } else {
+    display.print(" ");
+  }
+
+  if(digitalRead(BUTTON_DISPLAY_C) == LOW) {
+    display.print("C");
+  } else {
+    display.print(" ");
+  }
+
+  display.println("<");
+
+  ///////////////////////
+
+  display.print(">");
+
+  uint32_t joy_buttons = ss.digitalReadBulk(button_mask);
+
+  if(! (joy_buttons & (1 << BUTTON_JOY_A))) {
+    display.print("A");
+  } else {
+    display.print(" ");
+  }
+
+  if(! (joy_buttons & (1 << BUTTON_JOY_B))) {
+    display.print("B");
+  } else {
+    display.print(" ");
+  }
+
+  if(! (joy_buttons & (1 << BUTTON_JOY_Y))) {
+    display.print("Y");
+  } else {
+    display.print(" ");
+  }
+
+  if(! (joy_buttons & (1 << BUTTON_JOY_X))) {
+    display.print("X");
+  } else {
+    display.print(" ");
+  }
+
+  if(! (joy_buttons & (1 << BUTTON_JOY_SEL))) {
+    display.print("Sel");
+  } else {
+    display.print("   ");
+  }
+
+  display.println("<");
+
+  int x = ss.analogRead(JOY_X);
+  int y = ss.analogRead(JOY_Y);
+
+  display.print("(");
+  display.print(x);
+  display.print(",");
+  display.print(y);
+  display.print(")");
+
   display.display();
 }
