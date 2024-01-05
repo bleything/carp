@@ -11,6 +11,8 @@
 #define BUTTON_DISPLAY_B 8
 #define BUTTON_DISPLAY_C 7
 
+#define LED_PIN 13
+
 Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
 
 void setup() {
@@ -23,6 +25,10 @@ void setup() {
   pinMode(BUTTON_DISPLAY_A, INPUT_PULLUP);
   pinMode(BUTTON_DISPLAY_B, INPUT_PULLUP);
   pinMode(BUTTON_DISPLAY_C, INPUT_PULLUP);
+
+  // configure the built-in LED
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 }
 
 void clear_screen() {
