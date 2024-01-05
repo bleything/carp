@@ -14,20 +14,15 @@
 Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
 
 void setup() {
+  // configure the display
   delay(250); // wait for the OLED to power up
   display.begin(0x3C, true); // Address 0x3C default
-  display.setRotation(1);
-
-  // clear the display
-  display.clearDisplay();
-  display.display();
+  reset_screen();
 
   // configure display buttons
   pinMode(BUTTON_DISPLAY_A, INPUT_PULLUP);
   pinMode(BUTTON_DISPLAY_B, INPUT_PULLUP);
   pinMode(BUTTON_DISPLAY_C, INPUT_PULLUP);
-
-  reset_screen();
 }
 
 void clear_screen() {
@@ -36,6 +31,7 @@ void clear_screen() {
 }
 
 void reset_screen() {
+  display.setRotation(1);
   display.setTextSize(1);
   display.setTextColor(SH110X_WHITE);
 
