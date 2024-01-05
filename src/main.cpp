@@ -4,6 +4,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
+#include <Adafruit_seesaw.h>
 
 #include "display.h"
 
@@ -13,7 +14,21 @@
 
 #define LED_PIN 13
 
+// copypasta from the seesaw library's examples
+#define BUTTON_JOY_A    6
+#define BUTTON_JOY_B    7
+#define BUTTON_JOY_Y    9
+#define BUTTON_JOY_X   10
+#define BUTTON_JOY_SEL 14
+uint32_t button_mask = (1 << BUTTON_JOY_A) | (1 << BUTTON_JOY_B) |
+                       (1 << BUTTON_JOY_Y) | (1 << BUTTON_JOY_X) |
+                       (1 << BUTTON_JOY_SEL);
+
+#define JOY_X 2
+#define JOY_Y 3
+
 Adafruit_SH1107 display = Adafruit_SH1107(64, 128, &Wire);
+Adafruit_seesaw ss;
 
 void setup() {
   // configure the display
@@ -29,6 +44,17 @@ void setup() {
   // configure the built-in LED
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
+
+  // configure joywing
+  if(!ss.begin(0x49)) {
+    display.print("FATAL: error initializing seesaw");
+    display.display();
+    digitalWrite(LED_PIN, HIGH);
+    while(1) delay(10);
+  } else {
+    ss.pinModeBulk(button_mask, INPUT_PULLUP);
+    ss.setGPIOInterrupts(button_mask, 1);
+  }
 }
 
 void clear_screen() {
