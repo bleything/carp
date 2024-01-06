@@ -15,6 +15,8 @@ void scene_clock_test(void);
 
 void midi_clock_pulse(void);
 
+// this more complicated setup is necessary to ensure that the midi library
+// picks the right serial port
 struct MIDISettings : public midi::DefaultSettings {
   static const long BaudRate = 31250;
 };
@@ -47,6 +49,7 @@ void setup() {
     ss.setGPIOInterrupts(button_mask, 1);
   }
 
+  // configure MIDI
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.setHandleClock(midi_clock_pulse);
 }
