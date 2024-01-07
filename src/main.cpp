@@ -20,6 +20,8 @@ void midi_stop(void);
 void midi_note_on(byte, byte, byte);
 void midi_note_off(byte, byte, byte);
 
+bool redraw_display = true;
+
 bool seq_running = false;
 uint32_t midi_pulses = 0;
 uint8_t channel_out = 1;
@@ -69,30 +71,26 @@ void setup() {
   MIDI.setHandleStop(midi_stop);
 }
 
-// we will refresh the screen once every frame_delay milliseconds. 33 is
-// approximately 30fps.
-//
-// this prevents us from spending too much time messing with the display and
-// missing midi events
-uint8_t frame_delay = 33;
-uint64_t last_frame_at = 0;
 void loop() {
   MIDI.read();
-  // scene_ui_test();
-  // scene_midi_test();
-  // scene_clock_test();
 
-  uint64_t now = millis();
-  if((now - last_frame_at) > frame_delay) {
+  if(redraw_display) {
+    redraw_display = false;
+
+    clear_screen();
+    // scene_ui_test();
+    // scene_midi_test();
+    // scene_clock_test();
     scene_main();
-    last_frame_at = now;
+    display.display();
   }
 }
-
 
 void midi_start() {
   seq_running = true;
   current_step = 0;
+
+  redraw_display = true;
 }
 
 void midi_stop() {
@@ -101,6 +99,8 @@ void midi_stop() {
   for(uint8_t i = 0; i < 128; i++) {
     MIDI.sendNoteOff(i, 0, channel_out);
   }
+
+  redraw_display = true;
 }
 
 void midi_note_on(byte channel, byte note, byte velocity) {
@@ -125,12 +125,12 @@ void midi_clock_pulse() {
     MIDI.sendNoteOn(current_note, velocities[current_step], channel_out);
 
     if(++current_step > 15) current_step = 0;
+
+    redraw_display = true;
   }
 }
 
 void scene_main() {
-  display.clearDisplay();
-
   if(seq_running) {
     display.fillTriangle(0, 0, 0, 5, 5, 2, 1);
   } else {
@@ -145,14 +145,12 @@ void scene_main() {
   // current step marker
   int x = 4 + current_step * 8;
   display.fillCircle(x, 42, 2, 1);
-
-  display.display();
 }
 
 void scene_clock_test() {
-  clear_screen();
   display.printf("%08d", midi_pulses);
-  display.display();
+
+  redraw_display = true;
 }
 
 void scene_midi_test() {
@@ -166,7 +164,6 @@ void scene_midi_test() {
 }
 
 void scene_ui_test() {
-  clear_screen();
   display.print(">");
 
   if(digitalRead(BUTTON_DISPLAY_A) == LOW) {
@@ -236,5 +233,5 @@ void scene_ui_test() {
   display.print(y);
   display.print(")");
 
-  display.display();
+  redraw_display = true;
 }
